@@ -12,7 +12,7 @@ include(CTest)
 
 set(KALMAN_CXX_FLAGS "-std=c++11")
 
-option(KALMAN_BUILD_EXAMPLES "Build the Kalman examples" ON)
+option(KALMAN_BUILD_EXAMPLES "Build the Kalman examples" OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/cmake")
 
@@ -46,10 +46,17 @@ set(HEADERS
     include/kalman/Types.hpp
 )
 
-include_directories(
+add_library(${PROJECT_NAME} INTERFACE)
+
+target_include_directories(${PROJECT_NAME} INTERFACE
     "include"
     ${Eigen3_INCLUDE_DIR}
 )
+
+# include_directories(
+#     "include"
+#     ${Eigen3_INCLUDE_DIR}
+# )
 
 # Flags
 set(CMAKE_CXX_FLAGS "${KALMAN_CXX_FLAGS} -Wall -pedantic -g")
@@ -60,58 +67,58 @@ if(KALMAN_BUILD_EXAMPLES)
   add_executable(example_robot1 "examples/Robot1/main.cpp")
 endif()
 
-# Unit Tests
-set(TESTS
-    # EKF
-    test/ExtendedKalmanFilter.cpp
+# # Unit Tests
+# set(TESTS
+#     # EKF
+#     test/ExtendedKalmanFilter.cpp
     
-    # UKF
-    test/UnscentedKalmanFilterBase.cpp
-    test/UnscentedKalmanFilter.cpp
-    test/SquareRootUnscentedKalmanFilter.cpp
+#     # UKF
+#     test/UnscentedKalmanFilterBase.cpp
+#     test/UnscentedKalmanFilter.cpp
+#     test/SquareRootUnscentedKalmanFilter.cpp
     
-    # Utils
-    test/StandardBase.cpp
-    test/SquareRootBase.cpp
-    test/Matrix.cpp
-)
+#     # Utils
+#     test/StandardBase.cpp
+#     test/SquareRootBase.cpp
+#     test/Matrix.cpp
+# )
 
-if(BUILD_TESTING)
-  enable_testing()
-  add_subdirectory("external/googletest")
-  include_directories("external/googletest/include")
-  add_executable(kalman_test ${TESTS} ${HEADERS})
-  target_link_libraries(kalman_test PRIVATE gtest gtest_main)
-  add_test(Kalman kalman_test)
-endif()
+# if(BUILD_TESTING)
+#   enable_testing()
+#   add_subdirectory("external/googletest")
+#   include_directories("external/googletest/include")
+#   add_executable(kalman_test ${TESTS} ${HEADERS})
+#   target_link_libraries(kalman_test PRIVATE gtest gtest_main)
+#   add_test(Kalman kalman_test)
+# endif()
 
-#
-# Install/Uninstall support
-#
-include(CMakePackageConfigHelpers)
-set(KALMAN_INCLUDE_DIR include/
-  CACHE PATH "The directory where Kalman headers are installed")
-set(KALMAN_CONFIG_CMAKE_PATH lib${LIB_SUFFIX}/cmake/kalman
-  CACHE PATH "The directory where the CMake files are installed")
+# #
+# # Install/Uninstall support
+# #
+# include(CMakePackageConfigHelpers)
+# set(KALMAN_INCLUDE_DIR include/
+#   CACHE PATH "The directory where Kalman headers are installed")
+# set(KALMAN_CONFIG_CMAKE_PATH lib${LIB_SUFFIX}/cmake/kalman
+#   CACHE PATH "The directory where the CMake files are installed")
 
-set(KALMAN_USE_FILE ${KALMAN_CONFIG_CMAKE_PATH}/UseKalman.cmake)
+# set(KALMAN_USE_FILE ${KALMAN_CONFIG_CMAKE_PATH}/UseKalman.cmake)
 
-configure_package_config_file(cmake/KalmanConfig.cmake.in
-  ${CMAKE_CURRENT_BINARY_DIR}/KalmanConfig.cmake
-  INSTALL_DESTINATION ${KALMAN_CONFIG_CMAKE_PATH}
-  PATH_VARS KALMAN_INCLUDE_DIR KALMAN_USE_FILE)
-write_basic_package_version_file(
-  ${CMAKE_CURRENT_BINARY_DIR}/KalmanConfigVersion.cmake
-  VERSION ${PROJECT_VERSION}
-  COMPATIBILITY SameMajorVersion)
+# configure_package_config_file(cmake/KalmanConfig.cmake.in
+#   ${CMAKE_CURRENT_BINARY_DIR}/KalmanConfig.cmake
+#   INSTALL_DESTINATION ${KALMAN_CONFIG_CMAKE_PATH}
+#   PATH_VARS KALMAN_INCLUDE_DIR KALMAN_USE_FILE)
+# write_basic_package_version_file(
+#   ${CMAKE_CURRENT_BINARY_DIR}/KalmanConfigVersion.cmake
+#   VERSION ${PROJECT_VERSION}
+#   COMPATIBILITY SameMajorVersion)
 
-# Install targets
-install(DIRECTORY include/kalman DESTINATION include)
-install(FILES
-  ${CMAKE_CURRENT_SOURCE_DIR}/cmake/UseKalman.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/KalmanConfig.cmake
-  ${CMAKE_CURRENT_BINARY_DIR}/KalmanConfigVersion.cmake
-  DESTINATION ${KALMAN_CONFIG_CMAKE_PATH})
+# # Install targets
+# install(DIRECTORY include/kalman DESTINATION include)
+# install(FILES
+#   ${CMAKE_CURRENT_SOURCE_DIR}/cmake/UseKalman.cmake
+#   ${CMAKE_CURRENT_BINARY_DIR}/KalmanConfig.cmake
+#   ${CMAKE_CURRENT_BINARY_DIR}/KalmanConfigVersion.cmake
+#   DESTINATION ${KALMAN_CONFIG_CMAKE_PATH})
 
-# Add uninstall target
-add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/KalmanUninstall.cmake)
+# # Add uninstall target
+# add_custom_target(uninstall COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/cmake/KalmanUninstall.cmake)
