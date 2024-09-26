@@ -4,6 +4,8 @@
 find_path( Eigen3_INCLUDE_DIR Eigen/Core
     /usr/include/eigen3
     /usr/local/include/eigen3
+
+    ${CMAKE_CURRENT_SOURCE_DIR}/../eigen
 )
 
 include(LibFindMacros)
